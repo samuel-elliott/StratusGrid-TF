@@ -57,11 +57,10 @@ variable "Webhook_Secret" {
   default = "&KU&mEsH3&^W&kYP2!QicDH24YxafEgR!SvdY2dQ*Phs3UF#*npZf4j9RH8Sh^Kk"
 }
 
-# GitHub -> Settings -> Developer settings -> Personal Access Tokens -> "StratusGrid Terraform project"
-variable "GitHub_Token" {
-  type = string
-  default = "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"
-}
+#variable "GitHub_Token" {
+#  type = string
+#  default = "NOPE. Committing this to Git is beyond stupid. Set it as GITHUB_TOKEN shell variable or configure git to use it."
+#}
   
 variable "GitHub_Repo" {
   type = string
