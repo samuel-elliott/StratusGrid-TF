@@ -16,7 +16,9 @@ resource "aws_iam_policy" "AWSCodePipelineServiceRoleIAMPolicy" {
                 "StringEqualsIfExists": {
                     "iam:PassedToService": [
                         "cloudformation.amazonaws.com",
-                        "s3.amazonaws.com"
+                        "s3.amazonaws.com",
+                        "codepipeline.amazonaws.com",
+                        "lambda.amazonaws.com"
                     ]
                 }
             }
@@ -47,7 +49,9 @@ resource "aws_iam_policy" "AWSCodePipelineServiceRoleIAMPolicy" {
         {
             "Action": [
                 "s3:*",
-                "cloudformation:*"
+                "cloudformation:*",
+                "codepipeline:*",
+                "lambda:*"
             ],
             "Resource": "*",
             "Effect": "Allow"
@@ -144,7 +148,7 @@ EOF
 #builds the service role for codepipeline
 resource "aws_iam_role" "AWSCodePipelineServiceRole" {
   name = "AWSCodePipelineServiceRole"
-
+  path = "/service-path/"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -152,7 +156,8 @@ resource "aws_iam_role" "AWSCodePipelineServiceRole" {
     {
       "Effect": "Allow",
       "Principal": {
-        "Service": "codepipeline.amazonaws.com"
+        "Service": "codepipeline.amazonaws.com",
+        "Service": "lambda.amazonaws.com"
       },
       "Action": "sts:AssumeRole"
     }

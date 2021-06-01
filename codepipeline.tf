@@ -6,10 +6,10 @@ resource "aws_codepipeline" "github" {
     location = var.s3_artifact_bucket
     type     = "S3"
 
-    encryption_key {
-      id   = aws_kms_key.s3_bucket_cmk_key.arn
-      type = "KMS"
-    }
+#    encryption_key {
+#      id   = aws_kms_key.s3_bucket_cmk_key.arn
+#      type = "KMS"
+#    }
   }
 
   stage {
@@ -52,8 +52,25 @@ resource "aws_codepipeline" "github" {
       }
     }
   }
-}
 
+  stage {
+    name = "Invoke"
+
+    action {
+      name		= "Invoke"
+      category = "Invoke"
+	  owner = "AWS"
+      provider = "Lambda"
+      version = "1"
+#	  role_arn = aws_iam_role.invalidate_cloud_front_role.arn
+#      role_arn = aws_iam_role.iam_for_lambda.arn
+   
+      configuration = {
+        FunctionName = aws_lambda_function.invalidate_cloud_front_lambda.function_name
+      }
+  }
+}
+}
 # A shared secret between GitHub and AWS that allows AWS
 # CodePipeline to authenticate the request came from GitHub.
 # Would probably be better to pull this from the environment
@@ -76,17 +93,6 @@ resource "aws_codepipeline_webhook" "StratusGrid" {
     json_path    = "$.ref"
     match_equals = "refs/heads/{Branch}"
   }
-}
-
-resource "github_repository" "StratusGrid" {
-  name         = "StratusGrid"
-  description  = "StratusGrid"
-  homepage_url = "https://github.com/samuel-elliott/StratusGrid"
-
-  # Getting warning about this despite it being in official Terraform documentation example.
-  # FILE BUG REPORT TO GET DOCUMENTATION UPDATED!
-#  private = false 
-  visibility = "public"
 }
 
 # Wire the CodePipeline webhook into a GitHub repository.
